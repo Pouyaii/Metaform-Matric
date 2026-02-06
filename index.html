@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metaphor Matrix: Atrocity & GBV</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #34495e;
+            
+            /* Color Palette */
+            --color-atrocity: #2980b9; /* Blue - User Requested */
+            --color-gbv: #c0392b;      /* Red - User Requested */
+            --color-shared: #8e44ad;   /* Purple */
+            
+            --color-style-account: #16a085; /* Teal */
+            --color-style-logistic: #d35400; /* Orange */
+            --color-style-property: #7f8c8d; /* Grey */
+            --color-style-game: #f1c40f;     /* Yellow */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        p.subtitle {
+            text-align: center;
+            max-width: 700px;
+            margin-bottom: 25px;
+            color: #666;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .controls {
+            margin-bottom: 15px;
+            background: var(--card-bg);
+            padding: 8px 15px;
+            border-radius: 50px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            background: transparent;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        button.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 2px 5px rgba(44, 62, 80, 0.3);
+        }
+
+        button:hover:not(.active) {
+            background-color: #ecf0f1;
+            color: var(--primary);
+        }
+
+        #chart_container {
+            position: relative;
+            width: 95vw;
+            max-width: 1200px;
+            height: 700px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        #sankey_chart {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Custom Tooltip Styling */
+        #custom_tooltip {
+            position: absolute;
+            display: none;
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 350px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            pointer-events: auto; /* Allow interaction */
+        }
+
+        #custom_tooltip h4 {
+            margin: 0 0 8px 0;
+            color: var(--primary);
+            font-size: 1rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+
+        .tooltip-section {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #eee;
+        }
+        .tooltip-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        #custom_tooltip .source-label {
+            font-weight: bold;
+            color: #7f8c8d;
+            font-size: 0.8rem;
+            display: block;
+        }
+
+        #custom_tooltip a {
+            color: var(--color-atrocity); /* Default link color */
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 2px;
+            font-size: 0.85rem;
+        }
+
+        #custom_tooltip a:hover {
+            text-decoration: underline;
+        }
+
+        /* Legend Styling */
+        .legend-container {
+            margin-top: 15px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .legend-section {
+            display: none; /* Hidden by default */
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 8px;
+        }
+
+        .legend-section.visible {
+            display: flex;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #555;
+            background: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>The Inventory: Metaphor Matrix</h1>
+    <p class="subtitle">
+        Visualizing how language commodifies human rights in <strong>Atrocity</strong> and <strong>Gender-Based Violence (GBV)</strong>.<br>
+        <span style="font-size: 0.85em; color: #888;">Click on a metaphor to lock the source popup, or hover to view.</span>
+    </p>
+
+    <div class="controls">
+        <button id="btnOptionA" class="active" onclick="switchMode('A')">Option A: Direct Map</button>
+        <button id="btnOptionB" onclick="switchMode('B')">Option B: Thought Styles</button>
+    </div>
+
+    <div id="chart_container">
+        <div id="sankey_chart"></div>
+        <div id="custom_tooltip"></div>
+    </div>
+
+    <!-- LEGEND OPTION A -->
+    <div id="legendA" class="legend-container legend-section visible">
+        <div class="legend-item"><div class="dot" style="background: #2980b9;"></div> Atrocity Only</div>
+        <div class="legend-item"><div class="dot" style="background: #c0392b;"></div> GBV Only</div>
+        <div class="legend-item"><div class="dot" style="background: #8e44ad;"></div> Shared / Overlap</div>
+    </div>
+
+    <!-- LEGEND OPTION B -->
+    <div id="legendB" class="legend-container legend-section">
+        <div class="legend-item"><div class="dot" style="background: #16a085;"></div> Accounting Style</div>
+        <div class="legend-item"><div class="dot" style="background: #d35400;"></div> Logistics Style</div>
+        <div class="legend-item"><div class="dot" style="background: #7f8c8d;"></div> Property Style</div>
+        <div class="legend-item"><div class="dot" style="background: #f1c40f;"></div> Gamification Style</div>
+        <div style="border-left: 1px solid #ccc; margin: 0 10px;"></div>
+        <div class="legend-item"><div class="dot" style="background: #2980b9;"></div> Atrocity Meta</div>
+        <div class="legend-item"><div class="dot" style="background: #c0392b;"></div> GBV Meta</div>
+        <div class="legend-item"><div class="dot" style="background: #8e44ad;"></div> Shared Meta</div>
+    </div>
+
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['sankey']});
+        google.charts.setOnLoadCallback(() => drawChart('A'));
+
+        let currentMode = 'A';
+        let chart;
+        let tooltipTimeout;
+        let isTooltipLocked = false;
+
+        // --- COLORS ---
+        // GBV = Red, Atrocity = Blue, Shared = Purple
+        const C_ATROCITY = '#2980b9'; // Blue
+        const C_GBV = '#c0392b';      // Red
+        const C_SHARED = '#8e44ad';   // Purple
+        
+        const S_ACCOUNT = '#16a085'; // Teal
+        const S_LOGISTIC = '#d35400'; // Orange
+        const S_PROPERTY = '#7f8c8d'; // Grey
+        const S_GAME = '#f1c40f';     // Yellow
+
+        // --- CITATION DATA ---
+        const citations = {
+            // SHARED / OVERLAP
+            "Spoils of War": { 
+                type: "dual",
+                a_source: "The New Humanitarian: Rape is a spoil of war",
+                a_link: "https://www.thenewhumanitarian.org/news/2003/06/17/rape-spoil-war",
+                g_source: "ReliefWeb: When women are spoils of war",
+                g_link: "https://reliefweb.int/report/bosnia-and-herzegovina/when-women-are-spoils-war"
+            },
+            "Human Capital": {
+                type: "dual",
+                a_source: "NBER: War and Science in Ukraine",
+                a_link: "https://www.nber.org/system/files/working_papers/w31449/w31449.pdf",
+                g_source: "World Bank: Elevating women's human capital",
+                g_link: "https://www.worldbank.org/en/topic/gender/brief/addressing-gender-based-violence"
+            },
+            "Bargaining Chips": {
+                type: "dual",
+                a_source: "PBS NewsHour: Hamas hostages",
+                a_link: "https://www.pbs.org/newshour/world/hamas-names-3-israeli-hostages-to-be-released-saturday-to-uphold-shaky-gaza-ceasefire",
+                g_source: "UN Press: Women as bargaining chips",
+                g_link: "https://press.un.org/en/2014/ecosoc6638.doc.htm"
+            },
+            "Liabilities": {
+                type: "dual",
+                a_source: "JNS: PA's long game in Gaza",
+                a_link: "https://www.jns.org/the-palestinian-authoritys-long-game-in-gaza/",
+                g_source: "Girls Ed Pakistan: Liability",
+                g_link: "https://www.girlsed.org/pakistanprogram"
+            },
+            "Cost / Expense": {
+                type: "dual",
+                a_source: "The Guardian: Chiquita cost of doing business",
+                a_link: "https://www.theguardian.com/world/article/2024/jun/11/chiquita-banana-deaths-lawsuit-colombia",
+                g_source: "Justice GC: Cost of GBV",
+                g_link: "https://www.justice.gc.ca/eng/rp-pr/cj-jp/fv-vf/rr12_7/p1.html"
+            },
+            "Assets": {
+                type: "dual",
+                a_source: "ReliefWeb: Syrian Law on Seized Assets",
+                a_link: "https://reliefweb.int/report/syrian-arab-republic/preliminary-analysis-law-managing-and-investing-transferable-and-non-transferable-assets-were-seized-pursuant-unappealable-judicial-ruling-promulgated-peoples-assembly-syria-enar",
+                g_source: "The Elders: Key assets for peace",
+                g_link: "https://theelders.org/news/are-women-really-peaceful"
+            },
+
+            // ATROCITY ONLY
+            "Human Cargo": { source: "The Guardian: Refugees tell of brutality", link: "https://www.theguardian.com/uk-news/2020/aug/06/refugees-tell-of-brutality-as-people-smuggling-across-channel-booms" },
+            "Collateral Damage": { source: "Alternatives Humanitaires: Ukraine-Gaza", link: "https://www.alternatives-humanitaires.org/en/2024/11/27/ukraine-gaza-the-disappearance-of-strategy/" },
+            "Trading Territory": { source: "ERR News: PM on Karis remarks", link: "https://news.err.ee/1609932554/pm-on-karis-remarks-do-we-need-to-give-them-kyiv-too" },
+            "Human Inventory": { source: "Foreign Policy Association: Fatality Free Month", link: "https://fpa.org/our-fatality-free-month-in-iraq/" },
+            "Transferable Assets": { source: "ReliefWeb: Syrian Law on Seized Assets", link: "https://reliefweb.int/report/syrian-arab-republic/preliminary-analysis-law-managing-and-investing-transferable-and-non-transferable-assets-were-seized-pursuant-unappealable-judicial-ruling-promulgated-peoples-assembly-syria-enar"},
+
+            // GBV ONLY
+            "Damaged Goods": { source: "UN Press / Govt of Canada", link: "https://press.un.org/en/2000/20000606.equalitybrf.doc.html" },
+            "Owning/Ownership": { source: "Amnesty International", link: "https://www.amnesty.org/ar/wp-content/uploads/2022/02/ASA330181999ENGLISH.pdf" },
+            "Property": { source: "Amnesty International", link: "https://www.amnesty.org/ar/wp-content/uploads/2022/02/ASA330181999ENGLISH.pdf" },
+            "Sexual Property": { source: "OHCHR: Gender Stereotyping", link: "https://www.ohchr.org/en/women/gender-stereotyping" },
+            "Commodities": { source: "UN Documents E/CN.6/2020", link: "https://docs.un.org/en/E/CN.6/2020/NGO/150" },
+            "Bought & Sold": { source: "UNODC Speeches", link: "https://www.unodc.org/unodc/en/speeches/2022/untochtconflict-181022.html" },
+            "Merchandise": { source: "Interpol Spotlight", link: "https://www.interpol.int/en/Resources/INTERPOL-Spotlight/Spotlight-Issue-3-Defending-human-dignity/Focus-Human-trafficking-the-crime-that-turns-people-into-illegal-merchandise" },
+            "Hidden Tax": { source: "UN Women / UNICEF: Vietnam", link: "https://vietnam.un.org/en/295359-un-women-unicef-and-unfpa-reaffirm-commitment-support-ho-chi-minh-city-providing-essential" }
+        };
+
+        function switchMode(mode) {
+            currentMode = mode;
+            document.getElementById('btnOptionA').classList.toggle('active', mode === 'A');
+            document.getElementById('btnOptionB').classList.toggle('active', mode === 'B');
+            document.getElementById('legendA').classList.toggle('visible', mode === 'A');
+            document.getElementById('legendB').classList.toggle('visible', mode === 'B');
+            
+            // Hide tooltip when switching
+            hideTooltip(true);
+            drawChart(mode);
+        }
+
+        function drawChart(mode) {
+            const container = document.getElementById('sankey_chart');
+            // Clear container first to prevent artifacts
+            container.innerHTML = ''; 
+            chart = new google.visualization.Sankey(container);
+            
+            const data = new google.visualization.DataTable();
+            data.addColumn('string', 'From');
+            data.addColumn('string', 'To');
+            data.addColumn('number', 'Weight');
+
+            let rows = [];
+            let explicitNodeOrder = [];
+            
+            if (mode === 'A') {
+                // OPTION A: DIRECT MAP
+                // Strategy: Define nodes in order to force index-based coloring
+                
+                // 1. Define Nodes in exact order we want colors for
+                const blueNodes = ['Human Cargo', 'Collateral Damage', 'Trading Territory', 'Human Inventory', 'Transferable Assets'];
+                const redNodes = ['Damaged Goods', 'Owning/Ownership', 'Property', 'Sexual Property', 'Commodities', 'Bought & Sold', 'Merchandise', 'Hidden Tax'];
+                const purpleNodes = ['Spoils of War', 'Human Capital', 'Bargaining Chips', 'Liabilities', 'Cost / Expense', 'Assets'];
+                const targets = ['Atrocity', 'GBV'];
+
+                // Explicit Order: Blue Nodes -> Red Nodes -> Purple Nodes -> Targets
+                explicitNodeOrder = [...blueNodes, ...redNodes, ...purpleNodes, ...targets];
+
+                // 2. Generate Rows
+                // Blue (Atrocity Only)
+                blueNodes.forEach(n => rows.push([n, 'Atrocity', 5]));
+                // Red (GBV Only)
+                redNodes.forEach(n => rows.push([n, 'GBV', 5]));
+                // Purple (Shared)
+                purpleNodes.forEach(n => {
+                    rows.push([n, 'Atrocity', 5]);
+                    rows.push([n, 'GBV', 5]);
+                });
+
+            } else {
+                // OPTION B: THOUGHT STYLES
+                
+                // 1. Define Nodes in order: Styles -> Metaphors -> Targets
+                const styles = ['Accounting & Finance', 'Logistics & Trade', 'Property & Possession', 'Gamification'];
+                
+                // Metaphors (Grouped by Color for clarity in logic, though order here just dictates index)
+                const metaBlue = ['Human Cargo', 'Human Inventory', 'Collateral Damage', 'Trading Territory', 'Transferable Assets'];
+                const metaRed = ['Damaged Goods', 'Merchandise', 'Commodities', 'Bought & Sold', 'Hidden Tax', 'Owning/Ownership', 'Property', 'Sexual Property'];
+                const metaPurple = ['Liabilities', 'Cost / Expense', 'Assets', 'Human Capital', 'Spoils of War', 'Bargaining Chips'];
+                
+                const targets = ['Atrocity', 'GBV'];
+
+                explicitNodeOrder = [...styles, ...metaBlue, ...metaRed, ...metaPurple, ...targets];
+
+                // 2. Generate Rows (Logic Flow)
+                
+                // Accounting (Teal)
+                const accItems = ['Liabilities', 'Cost / Expense', 'Assets', 'Human Capital', 'Hidden Tax'];
+                accItems.forEach(m => {
+                    rows.push(['Accounting & Finance', m, 5]);
+                    // Add flows to targets
+                    getTargets(m).forEach(t => rows.push([m, t, 5]));
+                });
+
+                // Logistics (Orange)
+                const logItems = ['Human Cargo', 'Human Inventory', 'Collateral Damage', 'Trading Territory', 'Transferable Assets', 'Damaged Goods', 'Merchandise', 'Commodities', 'Bought & Sold'];
+                logItems.forEach(m => {
+                    rows.push(['Logistics & Trade', m, 5]);
+                    getTargets(m).forEach(t => rows.push([m, t, 5]));
+                });
+
+                // Property (Grey)
+                const propItems = ['Spoils of War', 'Owning/Ownership', 'Property', 'Sexual Property'];
+                propItems.forEach(m => {
+                    rows.push(['Property & Possession', m, 5]);
+                    getTargets(m).forEach(t => rows.push([m, t, 5]));
+                });
+
+                // Gamification (Yellow)
+                const gameItems = ['Bargaining Chips'];
+                gameItems.forEach(m => {
+                    rows.push(['Gamification', m, 5]);
+                    getTargets(m).forEach(t => rows.push([m, t, 5]));
+                });
+            }
+
+            data.addRows(rows);
+
+            // --- COLOR MAPPING ---
+            // Build the colors array based on explicitNodeOrder + any nodes Google finds that we missed (safety)
+            // AND the fact that Google Charts discovers nodes in 'From' then 'To' order from the rows.
+            // THIS IS THE TRICKY PART.
+            // To ensure 100% color accuracy, we simulate Google's discovery:
+            const discoveredNodes = [];
+            const seen = new Set();
+            rows.forEach(r => {
+                if (!seen.has(r[0])) { discoveredNodes.push(r[0]); seen.add(r[0]); }
+                if (!seen.has(r[1])) { discoveredNodes.push(r[1]); seen.add(r[1]); }
+            });
+
+            // Map each discovered node to its intended color
+            const calculatedColors = discoveredNodes.map(nodeName => getNodeColor(nodeName));
+
+            const options = {
+                sankey: {
+                    node: {
+                        label: { 
+                            fontName: 'Segoe UI',
+                            fontSize: 12,
+                            color: '#2c3e50',
+                            bold: true
+                        },
+                        nodePadding: 20,
+                        width: 15,
+                        interactivity: true,
+                        colors: calculatedColors // Pass the EXACT calculated array
+                    },
+                    link: {
+                        colorMode: 'gradient',
+                        fillOpacity: 0.4
+                    },
+                    tooltip: { trigger: 'none' } // Disable default tooltip
+                }
+            };
+
+            chart.draw(data, options);
+
+            // --- EVENT LISTENERS ---
+
+            // Click Handler (Lock/Unlock)
+            google.visualization.events.addListener(chart, 'select', function() {
+                const selection = chart.getSelection();
+                if (selection.length > 0) {
+                    // Item selected
+                    // Since Sankey selection gives row/col, we need to find the node name.
+                    // Actually, 'select' event on Sankey is tricky. 
+                    // Let's rely on the last hovered item if selection is tricky.
+                    // Google Charts Sankey selection returns: [{name: "Node Name"}] usually?
+                    // Let's check selection content.
+                    const item = selection[0];
+                    if (item.name) {
+                        isTooltipLocked = true;
+                        showTooltip(item.name, true); // True = lock mode
+                    }
+                } else {
+                    // Deselect
+                    isTooltipLocked = false;
+                    hideTooltip();
+                }
+            });
+
+            // Hover Handler
+            google.visualization.events.addListener(chart, 'onmouseover', function(e) {
+                if (!isTooltipLocked && e.name) {
+                    // Update position relative to this event
+                    updateTooltipPosition(e); 
+                    showTooltip(e.name, false);
+                }
+            });
+
+            // Mouse Out Handler
+            google.visualization.events.addListener(chart, 'onmouseout', function() {
+                if (!isTooltipLocked) {
+                    tooltipTimeout = setTimeout(hideTooltip, 200);
+                }
+            });
+
+            // Native Mouse Listeners for tooltip bridge
+            const tooltipEl = document.getElementById('custom_tooltip');
+            tooltipEl.addEventListener('mouseenter', () => {
+                if (tooltipTimeout) clearTimeout(tooltipTimeout);
+            });
+            tooltipEl.addEventListener('mouseleave', () => {
+                if (!isTooltipLocked) {
+                    tooltipTimeout = setTimeout(hideTooltip, 200);
+                }
+            });
+        }
+
+        // --- HELPERS ---
+
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+        
+        // Capture mouse position globally to help positioning if event data is sparse
+        document.addEventListener('mousemove', (e) => {
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+        });
+
+        function updateTooltipPosition(e) {
+            // Google Charts events don't always give clientX/Y accurately.
+            // We use global tracker if needed, or event if available.
+            const tooltip = document.getElementById('custom_tooltip');
+            const container = document.getElementById('chart_container').getBoundingClientRect();
+            
+            // Prefer event coordinates if they exist (chart relative), else global mouse
+            // Google Charts usually gives row/column. 'e' might not have coords.
+            // We use the global mouse position.
+            
+            let top = lastMouseY - container.top + 10;
+            let left = lastMouseX - container.left + 15;
+
+            // Boundaries
+            if (left + 350 > container.width) left -= 365; // Flip left
+            if (top + 150 > container.height) top -= 100; // Flip up
+
+            tooltip.style.top = top + 'px';
+            tooltip.style.left = left + 'px';
+        }
+
+        function getNodeColor(name) {
+            // Thought Styles
+            if (name === 'Accounting & Finance') return S_ACCOUNT;
+            if (name === 'Logistics & Trade') return S_LOGISTIC;
+            if (name === 'Property & Possession') return S_PROPERTY;
+            if (name === 'Gamification') return S_GAME;
+
+            // Targets
+            if (name === 'Atrocity') return C_ATROCITY;
+            if (name === 'GBV') return C_GBV;
+
+            // Shared Metaphors (Purple)
+            const purpleSet = ['Spoils of War', 'Human Capital', 'Bargaining Chips', 'Liabilities', 'Cost / Expense', 'Assets'];
+            if (purpleSet.includes(name)) return C_SHARED;
+
+            // Atrocity Only (Blue)
+            const blueSet = ['Human Cargo', 'Collateral Damage', 'Trading Territory', 'Human Inventory', 'Transferable Assets'];
+            if (blueSet.includes(name)) return C_ATROCITY;
+
+            // GBV Only (Red) - default for others if not caught above
+            return C_GBV;
+        }
+
+        function getTargets(m) {
+            if (citations[m] && citations[m].type === 'dual') return ['Atrocity', 'GBV'];
+            // Specific overrides
+            const blueSet = ['Human Cargo', 'Collateral Damage', 'Trading Territory', 'Human Inventory', 'Transferable Assets'];
+            if (blueSet.includes(m)) return ['Atrocity'];
+            return ['GBV'];
+        }
+
+        function showTooltip(name, locked) {
+            const data = citations[name];
+            const tooltip = document.getElementById('custom_tooltip');
+            
+            if (!data) return;
+
+            let content = '';
+            
+            if (locked) {
+                content += '<div style="text-align:right; font-size:0.7em; color:#999; margin-bottom:5px;">(Locked - Click chart to close)</div>';
+            }
+
+            if (data.type === 'dual') {
+                content += `
+                    <h4>${name}</h4>
+                    <div class="tooltip-section">
+                        <span class="category-tag" style="background:${C_ATROCITY};">Atrocity Source</span>
+                        <span class="source-label">${data.a_source}</span>
+                        <a href="${data.a_link}" target="_blank">View Article &rarr;</a>
+                    </div>
+                    <div class="tooltip-section">
+                        <span class="category-tag" style="background:${C_GBV};">GBV Source</span>
+                        <span class="source-label">${data.g_source}</span>
+                        <a href="${data.g_link}" target="_blank">View Article &rarr;</a>
+                    </div>`;
+            } else {
+                const isAtrocity = ['Human Cargo', 'Collateral Damage', 'Trading Territory', 'Human Inventory', 'Transferable Assets'].includes(name);
+                const color = isAtrocity ? C_ATROCITY : C_GBV;
+                const tag = isAtrocity ? 'Atrocity Source' : 'GBV Source';
+                
+                content += `
+                    <h4>${name}</h4>
+                    <div class="tooltip-section">
+                        <span class="category-tag" style="background:${color};">${tag}</span>
+                        <span class="source-label">${data.source}</span>
+                        <a href="${data.link}" target="_blank">View Article &rarr;</a>
+                    </div>`;
+            }
+            
+            tooltip.innerHTML = content;
+            tooltip.style.display = 'block';
+            if (locked) {
+                tooltip.style.border = '2px solid #2c3e50';
+                tooltip.style.boxShadow = '0 5px 20px rgba(0,0,0,0.3)';
+            } else {
+                tooltip.style.border = '1px solid #ddd';
+                tooltip.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+            }
+        }
+
+        function hideTooltip(force) {
+            if (isTooltipLocked && !force) return;
+            document.getElementById('custom_tooltip').style.display = 'none';
+        }
+
+        window.addEventListener('resize', () => {
+            drawChart(currentMode);
+        });
+
+    </script>
+</body>
+</html>
