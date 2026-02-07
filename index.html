@@ -13,8 +13,8 @@
             --text: #34495e;
             
             /* Color Palette */
-            --color-atrocity: #2980b9; /* Blue - User Requested */
-            --color-gbv: #c0392b;      /* Red - User Requested */
+            --color-atrocity: #2980b9; /* Blue */
+            --color-gbv: #c0392b;      /* Red */
             --color-shared: #8e44ad;   /* Purple */
             
             --color-style-account: #16a085; /* Teal */
@@ -85,18 +85,44 @@
         #chart_container {
             position: relative;
             width: 95vw;
-            max-width: 1200px;
-            height: 700px;
+            max-width: 1400px; 
+            height: 850px;
             background: var(--card-bg);
             border-radius: 12px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.05);
             padding: 10px;
             box-sizing: border-box;
+            overflow: visible; 
+            padding-left: 200px; 
+            padding-right: 100px;
         }
 
         #sankey_chart {
             width: 100%;
             height: 100%;
+        }
+        
+        #sankey_chart svg {
+            overflow: visible !important;
+        }
+
+        /* Chart Label Interactivity */
+        #sankey_chart text {
+            cursor: pointer;
+            transition: font-weight 0.1s;
+        }
+        
+        #sankey_chart text:hover {
+            font-weight: 900 !important; 
+            fill: #000 !important;
+        }
+
+        /* FORCE HIDE GOOGLE TOOLTIPS (HTML Based) */
+        div.google-visualization-tooltip { 
+            display: none !important; 
+            visibility: hidden !important; 
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
 
         /* Custom Tooltip Styling */
@@ -109,23 +135,50 @@
             padding: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             z-index: 1000;
-            max-width: 350px;
-            font-size: 0.9rem;
-            line-height: 1.4;
-            pointer-events: auto; /* Allow interaction */
+            max-width: 420px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            pointer-events: auto;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        /* Close Button Style */
+        .close-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: none;
+            font-size: 1.5rem;
+            line-height: 1;
+            color: #999;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s, color 0.2s;
+            padding: 0;
+        }
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
         }
 
         #custom_tooltip h4 {
-            margin: 0 0 8px 0;
+            margin: 0 25px 10px 0; /* Extra right margin for close button */
             color: var(--primary);
-            font-size: 1rem;
+            font-size: 1.1rem;
             border-bottom: 2px solid #eee;
             padding-bottom: 5px;
         }
 
         .tooltip-section {
-            margin-bottom: 10px;
-            padding-bottom: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
             border-bottom: 1px dashed #eee;
         }
         .tooltip-section:last-child {
@@ -136,13 +189,24 @@
 
         .category-tag {
             display: inline-block;
-            padding: 2px 6px;
+            padding: 3px 8px;
             border-radius: 4px;
             color: white;
             font-size: 0.75rem;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             text-transform: uppercase;
+        }
+
+        .metaphor-desc {
+            display: block;
+            margin-bottom: 10px;
+            color: #444;
+            font-weight: 600;
+            background: #eef2f5;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
         }
 
         #custom_tooltip .source-label {
@@ -150,15 +214,38 @@
             color: #7f8c8d;
             font-size: 0.8rem;
             display: block;
+            margin-top: 6px;
+        }
+        
+        #custom_tooltip .quote-text {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 6px;
+            display: block;
+            background: #f8f9fa;
+            padding: 8px;
+            border-left: 3px solid #ccc;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        #custom_tooltip .farsi-text {
+            font-family: 'Tahoma', 'Arial', sans-serif;
+            direction: rtl;
+            color: #333;
+            margin: 8px 0;
+            display: block;
+            background: #fff8e1; 
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ffe0b2;
         }
 
         #custom_tooltip a {
-            color: var(--color-atrocity); /* Default link color */
+            color: var(--color-atrocity); 
             text-decoration: none;
             font-weight: bold;
             display: inline-block;
-            margin-top: 2px;
-            font-size: 0.85rem;
+            margin-top: 4px;
         }
 
         #custom_tooltip a:hover {
@@ -175,7 +262,7 @@
         }
 
         .legend-section {
-            display: none; /* Hidden by default */
+            display: none;
             gap: 15px;
             flex-wrap: wrap;
             justify-content: center;
@@ -206,6 +293,73 @@
             border-radius: 3px;
         }
 
+        /* DATA LIST SECTION */
+        .data-section {
+            width: 95vw;
+            max-width: 1200px;
+            margin-top: 60px;
+            margin-bottom: 60px;
+        }
+
+        .data-section h2 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .data-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-top: 5px solid #ccc;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .data-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .data-card.atrocity { border-top-color: var(--color-atrocity); }
+        .data-card.gbv { border-top-color: var(--color-gbv); }
+        .data-card.shared { border-top-color: var(--color-shared); }
+
+        .data-card h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .data-card .sub-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .data-section-block {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-section-block:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -213,12 +367,12 @@
     <h1>The Inventory: Metaphor Matrix</h1>
     <p class="subtitle">
         Visualizing how language commodifies human rights in <strong>Atrocity</strong> and <strong>Gender-Based Violence (GBV)</strong>.<br>
-        <span style="font-size: 0.85em; color: #888;">Click on a metaphor to lock the source popup, or hover to view.</span>
+        <span style="font-size: 0.85em; color: #888;">Click on a metaphor label or flow line to lock the source popup. Press ESC or click "X" to close.</span>
     </p>
 
     <div class="controls">
-        <button id="btnOptionA" class="active" onclick="switchMode('A')">Option A: Direct Map</button>
-        <button id="btnOptionB" onclick="switchMode('B')">Option B: Thought Styles</button>
+        <button id="btnOptionA" class="active" onclick="switchMode('A')">Direct Map</button>
+        <button id="btnOptionB" onclick="switchMode('B')">Thought Styles</button>
     </div>
 
     <div id="chart_container">
@@ -245,17 +399,28 @@
         <div class="legend-item"><div class="dot" style="background: #8e44ad;"></div> Shared Meta</div>
     </div>
 
+    <!-- NEW DATA LIST SECTION -->
+    <div id="data_list" class="data-section">
+        <h2>Complete Inventory Data</h2>
+        <div id="data_grid" class="data-grid">
+            <!-- Cards injected via JS -->
+        </div>
+    </div>
+
     <script type="text/javascript">
         google.charts.load('current', {'packages':['sankey']});
-        google.charts.setOnLoadCallback(() => drawChart('A'));
+        google.charts.setOnLoadCallback(() => {
+            drawChart('A');
+            renderDataList(); // Render the data list on load
+        });
 
         let currentMode = 'A';
         let chart;
         let tooltipTimeout;
         let isTooltipLocked = false;
+        let observer; 
 
         // --- COLORS ---
-        // GBV = Red, Atrocity = Blue, Shared = Purple
         const C_ATROCITY = '#2980b9'; // Blue
         const C_GBV = '#c0392b';      // Red
         const C_SHARED = '#8e44ad';   // Purple
@@ -265,68 +430,180 @@
         const S_PROPERTY = '#7f8c8d'; // Grey
         const S_GAME = '#f1c40f';     // Yellow
 
+        // --- COMBINED NODES (English + Farsi) ---
+        const N_COMMODITIES = "Commodities / Abzar-pendari / ابزارپنداری";
+        const N_BARGAINING = "Bargaining Chips / Vajh-ol-Masaleh / وجه المصالحة";
+        const N_WOMEN_PROP = "Women are property / Melk-e Shakhsi / ملک شخصی"; 
+        const N_OWNING = '"Owning her"';
+
         // --- CITATION DATA ---
         const citations = {
-            // SHARED / OVERLAP
-            "Spoils of War": { 
+            // --- SHARED / OVERLAP (PURPLE) ---
+            "Spoils of war": { 
                 type: "dual",
-                a_source: "The New Humanitarian: Rape is a spoil of war",
-                a_link: "https://www.thenewhumanitarian.org/news/2003/06/17/rape-spoil-war",
+                a_desc: "Asserting that sexual violence is a looting mechanism, identical to stealing property.",
+                a_quote: "Women have always been regarded by men as 'obvious' 'spoils of war': their bodies symbolise the supposed honour of the men and their 'violation' demonstrates power over them...",
+                a_source: "Medica Mondiale: Sexualised wartime violence",
+                a_link: "https://medicamondiale.org/en/service/glossary/sexualised-wartime-violence",
+                g_desc: "Women are treated as goods seized during conflict.",
+                g_quote: "women are the spoils of war",
                 g_source: "ReliefWeb: When women are spoils of war",
                 g_link: "https://reliefweb.int/report/bosnia-and-herzegovina/when-women-are-spoils-war"
             },
             "Human Capital": {
                 type: "dual",
+                a_desc: "This phrase converts a population of living people into an economic unit of production. It doesn't say they are like capital; it labels them as capital.",
+                a_quote: "The war has had a devastating effect on human capital... Many scientists have been forced to flee.",
                 a_source: "NBER: War and Science in Ukraine",
                 a_link: "https://www.nber.org/system/files/working_papers/w31449/w31449.pdf",
+                g_desc: "Women are viewed as economic assets to be elevated.",
+                g_quote: "Ending gender-based violence and elevating women's human capital is central to the World Bank Group's approach",
                 g_source: "World Bank: Elevating women's human capital",
                 g_link: "https://www.worldbank.org/en/topic/gender/brief/addressing-gender-based-violence"
             },
-            "Bargaining Chips": {
+            [N_BARGAINING]: {
                 type: "dual",
+                farsi: {
+                    desc: "This phrase refers to something used to settle a deal or debt. It dehumanizes political prisoners by framing them as currency to be 'spent' to resolve a conflict.",
+                    source: "Iran Human Rights (Report on Dual Nationals)",
+                    quote_en: "Which government do you know that takes its own citizens hostage and makes them a transaction item (vajh-ol-masaleh)...",
+                    quote_fa: "آنها را وجه المصالحه يا مبادله با کشورهای دیگر قرار دهد",
+                    link: "https://iranhr.net/fa/articles/5813/"
+                },
+                a_desc: "Here, the quote asserts the captives are the chips. It removes the 'used as' structure.",
+                a_quote: "The captives are among the only bargaining chips it has left.",
                 a_source: "PBS NewsHour: Hamas hostages",
                 a_link: "https://www.pbs.org/newshour/world/hamas-names-3-israeli-hostages-to-be-released-saturday-to-uphold-shaky-gaza-ceasefire",
+                g_desc: "Women are treated as tokens to be traded in negotiations.",
+                g_quote: "This must stop. Women are not bargaining chips",
                 g_source: "UN Press: Women as bargaining chips",
                 g_link: "https://press.un.org/en/2014/ecosoc6638.doc.htm"
             },
             "Liabilities": {
                 type: "dual",
+                a_desc: "Framing a population group (Gaza) not as people, but as a financial burden on a balance sheet.",
+                a_quote: "The P.A. does not see Gaza as lost; it sees it as frozen, like a distressed asset whose liabilities are too toxic...",
                 a_source: "JNS: PA's long game in Gaza",
                 a_link: "https://www.jns.org/the-palestinian-authoritys-long-game-in-gaza/",
+                g_desc: "The negative financial counter-part to assets; a burden.",
+                g_quote: "We think girls are assets, not liabilities",
                 g_source: "Girls Ed Pakistan: Liability",
                 g_link: "https://www.girlsed.org/pakistanprogram"
             },
-            "Cost / Expense": {
+            "Cost of doing business": {
                 type: "dual",
-                a_source: "The Guardian: Chiquita cost of doing business",
+                a_desc: "Framing the payment of fines for funding death squads not as a criminal penalty, but as a routine operating expense.",
+                a_quote: "Executives saw the payment as the 'cost of doing business' in Colombia.",
+                a_source: "The Guardian: Chiquita ordered to pay $38m",
                 a_link: "https://www.theguardian.com/world/article/2024/jun/11/chiquita-banana-deaths-lawsuit-colombia",
+                g_desc: "Economic impact calculation of violence.",
+                g_quote: "The total economic impact of spousal violence in Canada in 2009 was estimated at $7.4 billion.",
                 g_source: "Justice GC: Cost of GBV",
                 g_link: "https://www.justice.gc.ca/eng/rp-pr/cj-jp/fv-vf/rr12_7/p1.html"
             },
             "Assets": {
                 type: "dual",
+                a_desc: "Using strict legal/financial language to describe seized property of dissidents, sanitizing the theft.",
+                a_quote: "Managing and Investing Transferable and Non-Transferable Assets That Were Seized...",
                 a_source: "ReliefWeb: Syrian Law on Seized Assets",
                 a_link: "https://reliefweb.int/report/syrian-arab-republic/preliminary-analysis-law-managing-and-investing-transferable-and-non-transferable-assets-were-seized-pursuant-unappealable-judicial-ruling-promulgated-peoples-assembly-syria-enar",
-                g_source: "The Elders: Key assets for peace",
-                g_link: "https://theelders.org/news/are-women-really-peaceful"
+                g_desc: "Framing girls and women as valuable resources for peace rather than burdens.",
+                g_quote: "We think girls are assets, not liabilities... Women are key assets for peace.",
+                g_source: "Girls Ed / The Elders",
+                g_link: "https://www.girlsed.org/pakistanprogram"
             },
 
-            // ATROCITY ONLY
-            "Human Cargo": { source: "The Guardian: Refugees tell of brutality", link: "https://www.theguardian.com/uk-news/2020/aug/06/refugees-tell-of-brutality-as-people-smuggling-across-channel-booms" },
-            "Collateral Damage": { source: "Alternatives Humanitaires: Ukraine-Gaza", link: "https://www.alternatives-humanitaires.org/en/2024/11/27/ukraine-gaza-the-disappearance-of-strategy/" },
-            "Trading Territory": { source: "ERR News: PM on Karis remarks", link: "https://news.err.ee/1609932554/pm-on-karis-remarks-do-we-need-to-give-them-kyiv-too" },
-            "Human Inventory": { source: "Foreign Policy Association: Fatality Free Month", link: "https://fpa.org/our-fatality-free-month-in-iraq/" },
-            "Transferable Assets": { source: "ReliefWeb: Syrian Law on Seized Assets", link: "https://reliefweb.int/report/syrian-arab-republic/preliminary-analysis-law-managing-and-investing-transferable-and-non-transferable-assets-were-seized-pursuant-unappealable-judicial-ruling-promulgated-peoples-assembly-syria-enar"},
+            // --- ATROCITY ONLY (BLUE) ---
+            "Human Cargo": { 
+                desc: "A direct noun phrase that labels refugees as freight.",
+                quote: "Smugglers, who often use inflatable dinghies to transport their human cargo.",
+                source: "The Guardian: Refugees tell of brutality", 
+                link: "https://www.theguardian.com/uk-news/2020/aug/06/refugees-tell-of-brutality-as-people-smuggling-across-channel-booms" 
+            },
+            "Collateral Damage": { 
+                desc: "An abstract noun phrase that replaces 'dead civilians' with 'incidental harm,' masking the human reality.",
+                quote: "The massive collateral damage that is outraging the entire world has been written off.",
+                source: "Alternatives Humanitaires: Ukraine-Gaza", 
+                link: "https://www.alternatives-humanitaires.org/en/2024/11/27/ukraine-gaza-the-disappearance-of-strategy/" 
+            },
+            "Trading Territory": { 
+                desc: "Treating sovereign land (and the people on it) as a currency for exchange.",
+                quote: "On the idea of trading territory for peace, the Estonian prime minister warned that a small chunk of territory isn't even Russia or Putin's goal.",
+                source: "ERR News: PM on Karis remarks", 
+                link: "https://news.err.ee/1609932554/pm-on-karis-remarks-do-we-need-to-give-them-kyiv-too" 
+            },
+            "Human Inventory": { 
+                desc: "Reducing military personnel to stock lists.",
+                quote: "Arguments against the war... ignores the human inventory.",
+                source: "Foreign Policy Association: Fatality Free Month", 
+                link: "https://fpa.org/our-fatality-free-month-in-iraq/" 
+            },
 
-            // GBV ONLY
-            "Damaged Goods": { source: "UN Press / Govt of Canada", link: "https://press.un.org/en/2000/20000606.equalitybrf.doc.html" },
-            "Owning/Ownership": { source: "Amnesty International", link: "https://www.amnesty.org/ar/wp-content/uploads/2022/02/ASA330181999ENGLISH.pdf" },
-            "Property": { source: "Amnesty International", link: "https://www.amnesty.org/ar/wp-content/uploads/2022/02/ASA330181999ENGLISH.pdf" },
-            "Sexual Property": { source: "OHCHR: Gender Stereotyping", link: "https://www.ohchr.org/en/women/gender-stereotyping" },
-            "Commodities": { source: "UN Documents E/CN.6/2020", link: "https://docs.un.org/en/E/CN.6/2020/NGO/150" },
-            "Bought & Sold": { source: "UNODC Speeches", link: "https://www.unodc.org/unodc/en/speeches/2022/untochtconflict-181022.html" },
-            "Merchandise": { source: "Interpol Spotlight", link: "https://www.interpol.int/en/Resources/INTERPOL-Spotlight/Spotlight-Issue-3-Defending-human-dignity/Focus-Human-trafficking-the-crime-that-turns-people-into-illegal-merchandise" },
-            "Hidden Tax": { source: "UN Women / UNICEF: Vietnam", link: "https://vietnam.un.org/en/295359-un-women-unicef-and-unfpa-reaffirm-commitment-support-ho-chi-minh-city-providing-essential" }
+            // --- GBV ONLY (RED) ---
+            "Damaged goods": { 
+                desc: "Rape is framed as an infringement of sexual property where the victim is viewed as a broken product.",
+                quote: "A raped girl was then considered damaged goods and the person who had done the damage was allowed to keep the girl.",
+                source: "UN Press / Govt of Canada", 
+                link: "https://press.un.org/en/2000/20000606.equalitybrf.doc.html" 
+            },
+            [N_OWNING]: { 
+                desc: "Explicit ownership-rights framing in marriage where the owner decides the fate of the property.",
+                quote: "Ownership rights are at stake when women are to be married... The concept of ownership has turned women into a commodity...",
+                source: "Amnesty International", 
+                link: "https://www.amnesty.org/ar/wp-content/uploads/2022/02/ASA330181999ENGLISH.pdf" 
+            },
+            [N_WOMEN_PROP]: { 
+                type: "single",
+                farsi: {
+                    desc: "Used in the context of honor killings to explain why men feel entitled to kill female relatives—because they view them as land or objects they own.",
+                    source: "Stop Honor Killings Campaign",
+                    quote_en: "Women are considered the personal property (melk-e shakhsi) of the society and its men...",
+                    quote_fa: "زنان ملک شخصی جامعه و مردان آن محسوب می شوند",
+                    link: "https://stophonorkillings.org/fa/?p=739" 
+                },
+                desc: "Women are defined not as individuals but as possessions belonging to male relatives.",
+                quote: "Women are considered the property of the males in their family irrespective of their class, ethnic or religious group",
+                source: "Amnesty International", 
+                link: "https://www.amnesty.org/ar/wp-content/uploads/2022/02/ASA330181999ENGLISH.pdf" 
+            },
+            "Sexual property": { 
+                desc: "Reducing women to objects of sexual ownership by men.",
+                quote: "women are the sexual property of men",
+                source: "OHCHR: Gender Stereotyping", 
+                link: "https://www.ohchr.org/en/women/gender-stereotyping" 
+            },
+            [N_COMMODITIES]: { 
+                type: "single",
+                farsi: {
+                    desc: "This phrase specifically describes the systematic reduction of women to 'tools' or 'instruments' for male use, denying their independent humanity.",
+                    source: "Hawzah News",
+                    quote_en: "Systematic tool-oriented thinking towards women (abzar-pendari) ... is one of the most significant harms of patriarchy.",
+                    quote_fa: "کالا انگاری زنان، بزرگ‌ترین آسیب مردسالاری",
+                    link: "https://www.hawzahnews.com/news/1000426/%D9%81%D9%85%DB%8C%D9%86%D9%85-%D8%AF%D8%B1-%D8%B4%D8%A8%DA%A9%D9%87-%D9%87%D8%A7%DB%8C-%D8%A7%D8%AC%D8%AA%D9%85%D8%A7%D8%B9%DB%8C"
+                },
+                desc: "The idea that women are goods available for consumption and exploitation.",
+                quote: "The idea that women are commodities available to be consumed and exploited has no place in a society striving for gender equality",
+                source: "UN Women NGO Statement", 
+                link: "https://docs.un.org/en/E/CN.6/2020/NGO/150" 
+            },
+            "Bought and sold": { 
+                desc: "Women are commercial objects to be purchased.",
+                quote: "Women become commodities, bought and sold for sex",
+                source: "UNODC", 
+                link: "https://www.unodc.org/unodc/en/speeches/2022/untochtconflict-181022.html" 
+            },
+            "Merchandise": { 
+                desc: "Human trafficking converts people into illegal stock or products.",
+                quote: "Human trafficking: the crime that turns people into illegal merchandise",
+                source: "INTERPOL Spotlight", 
+                link: "https://www.interpol.int/en/Resources/INTERPOL-Spotlight/Spotlight-Issue-3-Defending-human-dignity/Focus-Human-trafficking-the-crime-that-turns-people-into-illegal-merchandise" 
+            },
+            "Hidden tax": { 
+                desc: "Violence against women is framed as an economic cost or levy on development.",
+                quote: "Violence against women and children is not only a violation of rights - it is a hidden tax on development.",
+                source: "UN Vietnam", 
+                link: "https://vietnam.un.org/en/295359-un-women-unicef-and-unfpa-reaffirm-commitment-support-ho-chi-minh-city-providing-essential" 
+            }
         };
 
         function switchMode(mode) {
@@ -336,14 +613,235 @@
             document.getElementById('legendA').classList.toggle('visible', mode === 'A');
             document.getElementById('legendB').classList.toggle('visible', mode === 'B');
             
-            // Hide tooltip when switching
             hideTooltip(true);
             drawChart(mode);
         }
 
+        // --- UNIFIED SELECTION LOGIC ---
+        // Sets the chart selection programmatically to ensure highlighting matches the node
+        function selectMetaphor(name) {
+            if (!citations[name]) return;
+
+            isTooltipLocked = true;
+            showTooltip(name, true);
+            
+            // Programmatically select the node in the chart to trigger highlighting.
+            // Using setTimeout is crucial here to ensure the selection update happens
+            // after the current event loop, ensuring the chart catches the update properly
+            // even if called from a bubbling event.
+            if (chart) {
+                setTimeout(() => {
+                    chart.setSelection([{name: name}]);
+                }, 0);
+            }
+        }
+
+        // --- GLOBAL LISTENERS FOR TOOLTIP CLOSING ---
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                hideTooltip(true);
+            }
+        });
+
+        document.addEventListener('click', function(event) {
+            const tooltip = document.getElementById('custom_tooltip');
+            const target = event.target;
+            
+            // 1. If clicking inside tooltip, do nothing (allow interaction)
+            if (tooltip.contains(target)) return;
+            
+            // 2. If clicking a text label (we add class 'interactive-label'), do nothing (handled by its onclick)
+            if (target.classList.contains('interactive-label') || target.closest('.interactive-label')) return;
+            
+            // 3. If clicking inside the chart SVG (paths, rects), let the chart's internal listener handle it.
+            //    If it's a background click on SVG, chart fires 'select' -> [] -> hideTooltip.
+            //    If it's a node click, chart fires 'select' -> [node] -> showTooltip.
+            if (document.getElementById('sankey_chart').contains(target)) {
+                // EXCEPTION: If the user clicks the PADDING area of the container div (not the SVG itself),
+                // the chart doesn't catch it. We need to close.
+                // We check if the target ID is the container itself.
+                if (target.id === 'chart_container' || target.id === 'sankey_chart') {
+                    hideTooltip(true);
+                }
+                return;
+            }
+
+            // 4. Click is outside chart and tooltip -> Close
+            hideTooltip(true);
+        });
+
+        function renderDataList() {
+            const grid = document.getElementById('data_grid');
+            grid.innerHTML = ''; // Clear existing
+
+            const atrocitySet = ['Human Cargo', 'Collateral Damage', 'Trading Territory', 'Human Inventory', 'Transferable Assets'];
+            const sharedSet = ['Spoils of war', 'Human Capital', N_BARGAINING, 'Liabilities', 'Cost of doing business', 'Assets'];
+
+            // Loop through citations
+            for (const [key, data] of Object.entries(citations)) {
+                let categoryClass = 'gbv';
+                let tagColor = C_GBV;
+
+                if (atrocitySet.includes(key)) {
+                    categoryClass = 'atrocity';
+                    tagColor = C_ATROCITY;
+                } else if (sharedSet.includes(key)) {
+                    categoryClass = 'shared';
+                    tagColor = C_SHARED;
+                }
+
+                const card = document.createElement('div');
+                card.className = `data-card ${categoryClass}`;
+
+                // Process title to split Farsi if present for cleaner display
+                let titleHtml = `<h3>${key.split('/')[0].replace(/"/g, '')}</h3>`;
+                if (key.includes('/')) {
+                    titleHtml += `<div class="sub-label">${key.split('/').slice(1).join(' / ')}</div>`;
+                }
+
+                let contentHtml = '';
+
+                // Farsi Section
+                if (data.farsi) {
+                    contentHtml += `
+                        <div class="data-section-block">
+                            <span class="category-tag" style="background:#555;">Farsi Metaphor</span>`;
+                    
+                    // Added Farsi Description
+                    if (data.farsi.desc) {
+                        contentHtml += `<span class="metaphor-desc" style="font-size:0.9em">${data.farsi.desc}</span>`;
+                    }
+
+                    contentHtml += `
+                            <div class="farsi-text" dir="rtl">${data.farsi.quote_fa}</div>
+                            <span class="quote-text">"${data.farsi.quote_en}"</span>
+                            <span class="source-label">${data.farsi.source}</span>
+                            ${data.farsi.link ? `<a href="${data.farsi.link}" target="_blank">View Source &rarr;</a>` : ''}
+                        </div>`;
+                }
+
+                // Dual Content
+                if (data.type === 'dual') {
+                    // Atrocity Part
+                    contentHtml += `<div class="data-section-block">
+                        <span class="category-tag" style="background:${C_ATROCITY};">Atrocity</span>`;
+                    if (data.a_desc) contentHtml += `<span class="metaphor-desc" style="font-size:0.9em">${data.a_desc}</span>`;
+                    contentHtml += `<span class="quote-text">"${data.a_quote || ''}"</span>
+                        <span class="source-label">${data.a_source}</span>
+                        <a href="${data.a_link}" target="_blank">View Source &rarr;</a>
+                    </div>`;
+
+                    // GBV Part
+                    contentHtml += `<div class="data-section-block">
+                        <span class="category-tag" style="background:${C_GBV};">GBV</span>`;
+                    if (data.g_desc) contentHtml += `<span class="metaphor-desc" style="font-size:0.9em">${data.g_desc}</span>`;
+                    contentHtml += `<span class="quote-text">"${data.g_quote || ''}"</span>
+                        <span class="source-label">${data.g_source}</span>
+                        <a href="${data.g_link}" target="_blank">View Source &rarr;</a>
+                    </div>`;
+                } else {
+                    // Single Content
+                    const tag = (categoryClass === 'atrocity') ? 'Atrocity' : 'GBV';
+                    contentHtml += `<div class="data-section-block">
+                        <span class="category-tag" style="background:${tagColor};">${tag}</span>`;
+                    if (data.desc) contentHtml += `<span class="metaphor-desc" style="font-size:0.9em">${data.desc}</span>`;
+                    if (data.quote) contentHtml += `<span class="quote-text">"${data.quote}"</span>`;
+                    contentHtml += `<span class="source-label">${data.source}</span>
+                        <a href="${data.link}" target="_blank">View Source &rarr;</a>
+                    </div>`;
+                }
+
+                card.innerHTML = titleHtml + contentHtml;
+                grid.appendChild(card);
+            }
+        }
+
+        function repositionLabels(container) {
+            const svgElement = container.querySelector('svg');
+            if (!svgElement) return;
+            
+            const svgWidth = svgElement.getBoundingClientRect().width;
+            const textElements = Array.from(container.getElementsByTagName('text'));
+            
+            for (let i = 0; i < textElements.length; i++) {
+                const text = textElements[i];
+                if (text.getAttribute('fill') !== '#2c3e50') continue;
+                
+                // Add class for click listener check
+                text.classList.add('interactive-label');
+
+                const originalText = text.textContent; 
+                text.setAttribute('data-name', originalText);
+
+                const x = parseFloat(text.getAttribute('x'));
+                
+                // Handle Multiline splitting for Farsi
+                if (originalText.includes(' / ')) {
+                    const parts = originalText.split(' / ');
+                    const englishPart = parts[0];
+                    const farsiPart = parts.slice(1).join(' / '); 
+
+                    text.textContent = ''; 
+                    
+                    const tspan1 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+                    tspan1.textContent = englishPart;
+                    tspan1.setAttribute('x', x); 
+                    tspan1.setAttribute('dy', 0); 
+                    // Removed pointerEvents = "none" to allow clicking
+
+                    const tspan2 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+                    tspan2.textContent = farsiPart;
+                    tspan2.setAttribute('x', x); 
+                    tspan2.setAttribute('dy', "1.2em"); 
+                    tspan2.setAttribute('font-size', "0.9em");
+                    // Removed pointerEvents = "none" to allow clicking
+
+                    text.appendChild(tspan1);
+                    text.appendChild(tspan2);
+                }
+
+                text.onclick = function(e) {
+                    e.stopPropagation();
+                    const name = this.getAttribute('data-name');
+                    // Use unified handler
+                    selectMetaphor(name);
+                };
+
+                if (x < svgWidth * 0.35) {
+                    const newX = x - 25;
+                    text.setAttribute('x', newX);
+                    text.setAttribute('text-anchor', 'end');
+                    Array.from(text.children).forEach(tspan => tspan.setAttribute('x', newX));
+                }
+                else if (x > svgWidth * 0.65) {
+                    const newX = x + 25;
+                    text.setAttribute('x', newX);
+                    text.setAttribute('text-anchor', 'start');
+                    Array.from(text.children).forEach(tspan => tspan.setAttribute('x', newX));
+                }
+                else {
+                    const newX = x + 10;
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('font-weight', 'bold');
+                    text.setAttribute('x', newX);
+                    Array.from(text.children).forEach(tspan => tspan.setAttribute('x', newX));
+                    svgElement.appendChild(text);
+                }
+            }
+            
+            const titles = container.getElementsByTagName('title');
+            while(titles.length > 0) {
+                titles[0].parentNode.removeChild(titles[0]);
+            }
+        }
+
         function drawChart(mode) {
             const container = document.getElementById('sankey_chart');
-            // Clear container first to prevent artifacts
+            
+            if (observer) {
+                observer.disconnect();
+            }
+
             container.innerHTML = ''; 
             chart = new google.visualization.Sankey(container);
             
@@ -351,88 +849,49 @@
             data.addColumn('string', 'From');
             data.addColumn('string', 'To');
             data.addColumn('number', 'Weight');
+            data.addColumn({type: 'string', role: 'tooltip'});
 
             let rows = [];
-            let explicitNodeOrder = [];
+            
+            const blueNodes = ['Human Cargo', 'Collateral Damage', 'Trading Territory', 'Human Inventory'];
+            const redNodes = ['Damaged goods', N_OWNING, N_WOMEN_PROP, 'Sexual property', N_COMMODITIES, 'Bought and sold', 'Merchandise', 'Hidden tax'];
+            const purpleNodes = ['Spoils of war', 'Human Capital', N_BARGAINING, 'Liabilities', 'Cost of doing business', 'Assets'];
             
             if (mode === 'A') {
-                // OPTION A: DIRECT MAP
-                // Strategy: Define nodes in order to force index-based coloring
-                
-                // 1. Define Nodes in exact order we want colors for
-                const blueNodes = ['Human Cargo', 'Collateral Damage', 'Trading Territory', 'Human Inventory', 'Transferable Assets'];
-                const redNodes = ['Damaged Goods', 'Owning/Ownership', 'Property', 'Sexual Property', 'Commodities', 'Bought & Sold', 'Merchandise', 'Hidden Tax'];
-                const purpleNodes = ['Spoils of War', 'Human Capital', 'Bargaining Chips', 'Liabilities', 'Cost / Expense', 'Assets'];
-                const targets = ['Atrocity', 'GBV'];
-
-                // Explicit Order: Blue Nodes -> Red Nodes -> Purple Nodes -> Targets
-                explicitNodeOrder = [...blueNodes, ...redNodes, ...purpleNodes, ...targets];
-
-                // 2. Generate Rows
-                // Blue (Atrocity Only)
-                blueNodes.forEach(n => rows.push([n, 'Atrocity', 5]));
-                // Red (GBV Only)
-                redNodes.forEach(n => rows.push([n, 'GBV', 5]));
-                // Purple (Shared)
+                blueNodes.forEach(n => rows.push([n, 'Atrocity', 5, ""]));
+                redNodes.forEach(n => rows.push([n, 'GBV', 5, ""]));
                 purpleNodes.forEach(n => {
-                    rows.push([n, 'Atrocity', 5]);
-                    rows.push([n, 'GBV', 5]);
+                    rows.push([n, 'Atrocity', 5, ""]);
+                    rows.push([n, 'GBV', 5, ""]);
                 });
-
             } else {
-                // OPTION B: THOUGHT STYLES
-                
-                // 1. Define Nodes in order: Styles -> Metaphors -> Targets
-                const styles = ['Accounting & Finance', 'Logistics & Trade', 'Property & Possession', 'Gamification'];
-                
-                // Metaphors (Grouped by Color for clarity in logic, though order here just dictates index)
-                const metaBlue = ['Human Cargo', 'Human Inventory', 'Collateral Damage', 'Trading Territory', 'Transferable Assets'];
-                const metaRed = ['Damaged Goods', 'Merchandise', 'Commodities', 'Bought & Sold', 'Hidden Tax', 'Owning/Ownership', 'Property', 'Sexual Property'];
-                const metaPurple = ['Liabilities', 'Cost / Expense', 'Assets', 'Human Capital', 'Spoils of War', 'Bargaining Chips'];
-                
-                const targets = ['Atrocity', 'GBV'];
-
-                explicitNodeOrder = [...styles, ...metaBlue, ...metaRed, ...metaPurple, ...targets];
-
-                // 2. Generate Rows (Logic Flow)
-                
-                // Accounting (Teal)
-                const accItems = ['Liabilities', 'Cost / Expense', 'Assets', 'Human Capital', 'Hidden Tax'];
+                const accItems = ['Liabilities', 'Cost of doing business', 'Assets', 'Human Capital', 'Hidden tax'];
                 accItems.forEach(m => {
-                    rows.push(['Accounting & Finance', m, 5]);
-                    // Add flows to targets
-                    getTargets(m).forEach(t => rows.push([m, t, 5]));
+                    rows.push(['Accounting & Finance', m, 5, ""]);
+                    getTargets(m).forEach(t => rows.push([m, t, 5, ""]));
                 });
 
-                // Logistics (Orange)
-                const logItems = ['Human Cargo', 'Human Inventory', 'Collateral Damage', 'Trading Territory', 'Transferable Assets', 'Damaged Goods', 'Merchandise', 'Commodities', 'Bought & Sold'];
+                const logItems = ['Human Cargo', 'Human Inventory', 'Collateral Damage', 'Trading Territory', 'Damaged goods', 'Merchandise', N_COMMODITIES, 'Bought and sold'];
                 logItems.forEach(m => {
-                    rows.push(['Logistics & Trade', m, 5]);
-                    getTargets(m).forEach(t => rows.push([m, t, 5]));
+                    rows.push(['Logistics & Trade', m, 5, ""]);
+                    getTargets(m).forEach(t => rows.push([m, t, 5, ""]));
                 });
 
-                // Property (Grey)
-                const propItems = ['Spoils of War', 'Owning/Ownership', 'Property', 'Sexual Property'];
+                const propItems = ['Spoils of war', N_OWNING, N_WOMEN_PROP, 'Sexual property'];
                 propItems.forEach(m => {
-                    rows.push(['Property & Possession', m, 5]);
-                    getTargets(m).forEach(t => rows.push([m, t, 5]));
+                    rows.push(['Property & Possession', m, 5, ""]);
+                    getTargets(m).forEach(t => rows.push([m, t, 5, ""]));
                 });
 
-                // Gamification (Yellow)
-                const gameItems = ['Bargaining Chips'];
+                const gameItems = [N_BARGAINING];
                 gameItems.forEach(m => {
-                    rows.push(['Gamification', m, 5]);
-                    getTargets(m).forEach(t => rows.push([m, t, 5]));
+                    rows.push(['Gamification', m, 5, ""]);
+                    getTargets(m).forEach(t => rows.push([m, t, 5, ""]));
                 });
             }
 
             data.addRows(rows);
 
-            // --- COLOR MAPPING ---
-            // Build the colors array based on explicitNodeOrder + any nodes Google finds that we missed (safety)
-            // AND the fact that Google Charts discovers nodes in 'From' then 'To' order from the rows.
-            // THIS IS THE TRICKY PART.
-            // To ensure 100% color accuracy, we simulate Google's discovery:
             const discoveredNodes = [];
             const seen = new Set();
             rows.forEach(r => {
@@ -440,74 +899,91 @@
                 if (!seen.has(r[1])) { discoveredNodes.push(r[1]); seen.add(r[1]); }
             });
 
-            // Map each discovered node to its intended color
             const calculatedColors = discoveredNodes.map(nodeName => getNodeColor(nodeName));
 
             const options = {
+                tooltip: { trigger: 'none' }, 
                 sankey: {
                     node: {
                         label: { 
                             fontName: 'Segoe UI',
                             fontSize: 12,
                             color: '#2c3e50',
-                            bold: true
+                            bold: true,
                         },
-                        nodePadding: 20,
+                        nodePadding: 35,
                         width: 15,
                         interactivity: true,
-                        colors: calculatedColors // Pass the EXACT calculated array
+                        colors: calculatedColors
                     },
                     link: {
                         colorMode: 'gradient',
                         fillOpacity: 0.4
-                    },
-                    tooltip: { trigger: 'none' } // Disable default tooltip
+                    }
                 }
             };
+            
+            observer = new MutationObserver((mutations) => {
+                observer.disconnect();
+                repositionLabels(container);
+                observer.observe(container, { 
+                    childList: true, 
+                    subtree: true, 
+                    attributes: true, 
+                    attributeFilter: ['d', 'transform'] 
+                });
+            });
+
+            google.visualization.events.addListener(chart, 'ready', () => {
+                repositionLabels(container);
+                observer.observe(container, { 
+                    childList: true, 
+                    subtree: true,
+                    attributes: true
+                });
+            });
 
             chart.draw(data, options);
 
-            // --- EVENT LISTENERS ---
-
-            // Click Handler (Lock/Unlock)
             google.visualization.events.addListener(chart, 'select', function() {
                 const selection = chart.getSelection();
                 if (selection.length > 0) {
-                    // Item selected
-                    // Since Sankey selection gives row/col, we need to find the node name.
-                    // Actually, 'select' event on Sankey is tricky. 
-                    // Let's rely on the last hovered item if selection is tricky.
-                    // Google Charts Sankey selection returns: [{name: "Node Name"}] usually?
-                    // Let's check selection content.
                     const item = selection[0];
                     if (item.name) {
+                        // Node selected via Chart Click
                         isTooltipLocked = true;
-                        showTooltip(item.name, true); // True = lock mode
+                        showTooltip(item.name, true);
+                    } else if (typeof item.row === 'number') {
+                        // Link Clicked
+                        const source = data.getValue(item.row, 0);
+                        const target = data.getValue(item.row, 1);
+                        
+                        if (citations[source]) {
+                            selectMetaphor(source); 
+                        } 
+                        else if (citations[target]) {
+                            selectMetaphor(target); 
+                        }
                     }
                 } else {
-                    // Deselect
                     isTooltipLocked = false;
                     hideTooltip();
                 }
             });
 
-            // Hover Handler
             google.visualization.events.addListener(chart, 'onmouseover', function(e) {
                 if (!isTooltipLocked && e.name) {
-                    // Update position relative to this event
                     updateTooltipPosition(e); 
                     showTooltip(e.name, false);
                 }
             });
 
-            // Mouse Out Handler
             google.visualization.events.addListener(chart, 'onmouseout', function() {
                 if (!isTooltipLocked) {
                     tooltipTimeout = setTimeout(hideTooltip, 200);
                 }
             });
 
-            // Native Mouse Listeners for tooltip bridge
             const tooltipEl = document.getElementById('custom_tooltip');
             tooltipEl.addEventListener('mouseenter', () => {
                 if (tooltipTimeout) clearTimeout(tooltipTimeout);
@@ -524,61 +1000,50 @@
         let lastMouseX = 0;
         let lastMouseY = 0;
         
-        // Capture mouse position globally to help positioning if event data is sparse
         document.addEventListener('mousemove', (e) => {
             lastMouseX = e.clientX;
             lastMouseY = e.clientY;
         });
 
         function updateTooltipPosition(e) {
-            // Google Charts events don't always give clientX/Y accurately.
-            // We use global tracker if needed, or event if available.
             const tooltip = document.getElementById('custom_tooltip');
             const container = document.getElementById('chart_container').getBoundingClientRect();
-            
-            // Prefer event coordinates if they exist (chart relative), else global mouse
-            // Google Charts usually gives row/column. 'e' might not have coords.
-            // We use the global mouse position.
             
             let top = lastMouseY - container.top + 10;
             let left = lastMouseX - container.left + 15;
 
-            // Boundaries
-            if (left + 350 > container.width) left -= 365; // Flip left
-            if (top + 150 > container.height) top -= 100; // Flip up
+            if (left + 400 > container.width) left -= 415; 
+            if (top + 300 > container.height) top -= 200; 
 
             tooltip.style.top = top + 'px';
             tooltip.style.left = left + 'px';
         }
 
         function getNodeColor(name) {
-            // Thought Styles
             if (name === 'Accounting & Finance') return S_ACCOUNT;
             if (name === 'Logistics & Trade') return S_LOGISTIC;
             if (name === 'Property & Possession') return S_PROPERTY;
             if (name === 'Gamification') return S_GAME;
 
-            // Targets
             if (name === 'Atrocity') return C_ATROCITY;
             if (name === 'GBV') return C_GBV;
 
-            // Shared Metaphors (Purple)
-            const purpleSet = ['Spoils of War', 'Human Capital', 'Bargaining Chips', 'Liabilities', 'Cost / Expense', 'Assets'];
+            const purpleSet = ['Spoils of war', 'Human Capital', N_BARGAINING, 'Liabilities', 'Cost of doing business', 'Assets'];
             if (purpleSet.includes(name)) return C_SHARED;
 
-            // Atrocity Only (Blue)
             const blueSet = ['Human Cargo', 'Collateral Damage', 'Trading Territory', 'Human Inventory', 'Transferable Assets'];
             if (blueSet.includes(name)) return C_ATROCITY;
 
-            // GBV Only (Red) - default for others if not caught above
             return C_GBV;
         }
 
         function getTargets(m) {
-            if (citations[m] && citations[m].type === 'dual') return ['Atrocity', 'GBV'];
-            // Specific overrides
+            const purpleSet = ['Spoils of war', 'Human Capital', N_BARGAINING, 'Liabilities', 'Cost of doing business', 'Assets'];
+            if (purpleSet.includes(m)) return ['Atrocity', 'GBV'];
+            
             const blueSet = ['Human Cargo', 'Collateral Damage', 'Trading Territory', 'Human Inventory', 'Transferable Assets'];
             if (blueSet.includes(m)) return ['Atrocity'];
+            
             return ['GBV'];
         }
 
@@ -586,36 +1051,96 @@
             const data = citations[name];
             const tooltip = document.getElementById('custom_tooltip');
             
-            if (!data) return;
-
-            let content = '';
-            
-            if (locked) {
-                content += '<div style="text-align:right; font-size:0.7em; color:#999; margin-bottom:5px;">(Locked - Click chart to close)</div>';
+            if (!data) {
+                tooltip.style.display = 'none';
+                return;
             }
 
-            if (data.type === 'dual') {
+            // ADD CLOSE BUTTON TO CONTENT
+            let content = `<button class="close-btn" onclick="hideTooltip(true)">×</button>`;
+            
+            if (locked) {
+                content += '<div style="text-align:right; font-size:0.7em; color:#999; margin-bottom:5px; margin-right: 20px;">(Locked)</div>';
+            }
+
+            // --- FARSI SECTION ---
+            if (data.farsi) {
                 content += `
-                    <h4>${name}</h4>
-                    <div class="tooltip-section">
-                        <span class="category-tag" style="background:${C_ATROCITY};">Atrocity Source</span>
+                    <div class="tooltip-section" style="border-left: 3px solid #f1c40f; padding-left:10px;">
+                        <span class="category-tag" style="background:#555;">Farsi Metaphor / Translation</span>`;
+                
+                // ADDED FARSI DESCRIPTION
+                if (data.farsi.desc) {
+                    content += `<span class="metaphor-desc" style="font-size:0.9em">${data.farsi.desc}</span>`;
+                }
+
+                content += `
+                        <div class="farsi-text" dir="rtl">${data.farsi.quote_fa}</div>
+                        <span class="quote-text">"${data.farsi.quote_en}"</span>
+                        <span class="source-label">${data.farsi.source}</span>
+                `;
+                if(data.farsi.link) {
+                    content += `<a href="${data.farsi.link}" target="_blank">View Farsi Source &rarr;</a>`;
+                }
+                content += `</div>`;
+            }
+
+            // --- ENGLISH SECTION ---
+            content += `<h4>${name.split('/')[0].replace(/"/g, '')} (English Sources)</h4>`; 
+
+            // Single Node Metaphor Desc
+            if (data.desc) {
+                content += `<span class="metaphor-desc">${data.desc}</span>`;
+            }
+
+            // Dual Node Content
+            if (data.type === 'dual') {
+                // Atrocity Section
+                content += `<div class="tooltip-section">
+                        <span class="category-tag" style="background:${C_ATROCITY};">Atrocity Source</span>`;
+                
+                if (data.a_desc) {
+                    content += `<span class="metaphor-desc" style="font-size:0.85em; margin-top:5px;">${data.a_desc}</span>`;
+                }
+                
+                content += `
+                        <div style="margin-top:4px; margin-bottom:4px;">
+                            ${data.a_quote ? `<span class="quote-text" style="font-size:0.9em; display:block;">"${data.a_quote}"</span>` : ''}
+                        </div>
                         <span class="source-label">${data.a_source}</span>
                         <a href="${data.a_link}" target="_blank">View Article &rarr;</a>
-                    </div>
-                    <div class="tooltip-section">
-                        <span class="category-tag" style="background:${C_GBV};">GBV Source</span>
+                    </div>`;
+
+                // GBV Section
+                content += `<div class="tooltip-section">
+                        <span class="category-tag" style="background:${C_GBV};">GBV Source</span>`;
+                        
+                if (data.g_desc) {
+                    content += `<span class="metaphor-desc" style="font-size:0.85em; margin-top:5px;">${data.g_desc}</span>`;
+                }
+
+                content += `
+                        <div style="margin-top:4px; margin-bottom:4px;">
+                            ${data.g_quote ? `<span class="quote-text" style="font-size:0.9em; display:block;">"${data.g_quote}"</span>` : ''}
+                        </div>
                         <span class="source-label">${data.g_source}</span>
                         <a href="${data.g_link}" target="_blank">View Article &rarr;</a>
                     </div>`;
             } else {
+                // Single Node Content
                 const isAtrocity = ['Human Cargo', 'Collateral Damage', 'Trading Territory', 'Human Inventory', 'Transferable Assets'].includes(name);
                 const color = isAtrocity ? C_ATROCITY : C_GBV;
                 const tag = isAtrocity ? 'Atrocity Source' : 'GBV Source';
                 
                 content += `
-                    <h4>${name}</h4>
                     <div class="tooltip-section">
-                        <span class="category-tag" style="background:${color};">${tag}</span>
+                        <span class="category-tag" style="background:${color};">${tag}</span>`;
+                
+                if (data.quote) {
+                    content += `<span class="quote-text" style="font-size:0.9em; display:block;">"${data.quote}"</span>`;
+                }
+
+                content += `
                         <span class="source-label">${data.source}</span>
                         <a href="${data.link}" target="_blank">View Article &rarr;</a>
                     </div>`;
@@ -635,6 +1160,11 @@
         function hideTooltip(force) {
             if (isTooltipLocked && !force) return;
             document.getElementById('custom_tooltip').style.display = 'none';
+            // Also reset lock state if forced (e.g. via X button or ESC)
+            if (force) {
+                isTooltipLocked = false;
+                if(chart) chart.setSelection([]);
+            }
         }
 
         window.addEventListener('resize', () => {
